@@ -69,7 +69,7 @@ shinyServer(function(input, output) {
       
       #CG3$V8<-c(1:nrow(CG3)) # CRITICAL: Used for labeling and position!
       
-      seqData <<- CG3$V3
+      seqData <<- as.character(CG3$V3)
       
       print(ggplot(CG3,aes(x=c(1:nrow(CG3)),y=CG3$V4))+ # Notice X position is determined by V7
                geom_bar(stat="identity",
@@ -103,20 +103,29 @@ shinyServer(function(input, output) {
     # the argument 'file'.
     content = function(file) {
 
-      plasmidAA <- read.fasta("Plasmids20-200kb-6-9-2016AA.fa","AA")
+      #plasmidAA <- read.fasta("Plasmids20-200kb-6-9-2016AA.fa","AA")
       print("FINISHED FASTA READ")
-      for (seq in plasmidAA)
+      
+      writeSeqs <- function(seq)
       {
-        print(seq)
-        if (attr(seq,"name") %in% seqData)
+        seqName <- attr(seq,"name")
+        if (grepl("<unknown description>",seqName))
         {
-          print("WRITING...")
-          write.fasta(seq,input$variable,
-                      file.out=paste(input$variable, "faa", sep = "."),
-                      open="a")
-          print("DONE WITH A WRITE")
+          seqName <- strsplit(seqName," ")[[1]][1]
+        }
+        if (tolower(seqName) %in% seqData)
+        {
+          print("RETURNING...")
+          return(seq)
+          print("DONE WITH A RETURN")
         }
       }
+      Seqs <<- lapply(plasmidAA,writeSeqs)
+      Seqs<-Seqs[!sapply(Seqs, is.null)] # REMOVE NULL seqs 
+                                         # (since lapply return same length)
+      print("DONe")
+      write.fasta(Seqs,input$variable,
+                  file.out=paste(input$variable, "faa", sep = "."))
     }
   )
 })
