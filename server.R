@@ -2,7 +2,7 @@ library(shiny)
 library(datasets)
 library(ggplot2) # load ggplot
 library(seqinr)
-
+ClusterGroups <- read.csv(file="ClusterGroups_6-28.csv",sep=",")
 # Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
   
