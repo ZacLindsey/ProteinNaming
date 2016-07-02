@@ -2,7 +2,6 @@ library(shiny)
 library(datasets)
 library(ggplot2) # load ggplot
 library(seqinr)
-ClusterGroups <- read.csv(file="ClusterGroups_6-28.csv",sep=",")
 # Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
   
@@ -28,6 +27,8 @@ shinyServer(function(input, output) {
   output$proteinPlot <- renderPlot({
     # check for the input variable
     backbone <- input$variable
+    
+    ClusterGroups <- read.csv(file="ClusterGroups_6-28.csv",sep=",")
     
     x=c()
     for (id in unique(ClusterGroups$V1))
