@@ -28,8 +28,6 @@ shinyServer(function(input, output) {
     # check for the input variable
     backbone <- input$variable
     
-    ClusterGroups <- read.csv(file="ClusterGroups_6-28.csv",sep=",")
-    
     x=c()
     for (id in unique(ClusterGroups$V1))
     {

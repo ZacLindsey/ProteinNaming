@@ -1,4 +1,5 @@
 library(shiny)
+ClusterGroups <<- read.csv(file="ClusterGroups_6-28.csv",head=FALSE,sep=",")
 
 # Define UI for miles per gallon application
 shinyUI(pageWithSidebar(

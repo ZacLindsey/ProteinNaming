@@ -1,6 +1,7 @@
 # Some of the reversals in this function
 # will be difficult to follow, but are necessary
 # 6/30/2016
+
 subsetData <- function(data,ranges)
 {
   CG3 <- data
