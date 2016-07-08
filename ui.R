@@ -32,7 +32,7 @@ shinyUI(pageWithSidebar(
   # Show the caption and plot of the requested variable against mpg
   mainPanel(
     h3("Plot of this protein (may take a few min to render)"),
-    
+    h5("Bold labeled font = matched a reference plasmid"),
     plotOutput("proteinPlot",width="100%")
   )
 ))

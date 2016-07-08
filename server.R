@@ -20,7 +20,6 @@ shinyServer(function(input, output) {
   
   getHeight<-function() # NOTE: I don't know how/why this works!
   {
-    print(exprToFunction(input$rC2))
     return(exprToFunction(input$rC2))
   }
   
@@ -60,7 +59,30 @@ shinyServer(function(input, output) {
       
       CG3$V7<-c(1:nrow(CG3)) # CRITICAL: Used for labeling and position!
       # Will be the same as V7 if no subset
-
+      
+      references <- tolower(c("R7K","R46","pRA3","pKJK5","RK2","RP4","pNDM-1_Dok01"))
+      cids <- c()
+      for (cRow in c(1:nrow(CG3)))
+      {
+        plasmid <- strsplit(as.character(CG3$V3[cRow]),"_")[[1]]
+        if(length(plasmid)>2)
+        {
+          plasmid <- plasmid[2:length(plasmid)]
+          plasmid <- paste(plasmid,collapse="_")
+        }
+        else
+        {
+          plasmid <- plasmid[2]
+        }
+        if (plasmid %in% references)
+        {
+          cids <- c(cids, CG3$V2[cRow])
+        }
+      }
+      cids2 <- unique(cids)
+      CG3$V8 <- FALSE
+      CG3[which(CG3$V2 %in% cids),"V8"] <- TRUE
+      
       if (input$Subset) # For subsetting only: modify CG3
       {
         CG3<-subsetData(CG3,input$ranges)
@@ -69,7 +91,6 @@ shinyServer(function(input, output) {
       #CG3$V8<-c(1:nrow(CG3)) # CRITICAL: Used for labeling and position!
       
       seqData <<- as.character(CG3$V3)
-      
       print(ggplot(CG3,aes(x=c(1:nrow(CG3)),y=CG3$V4))+ # Notice X position is determined by V7
                geom_bar(stat="identity",
                         fill=CG3$V6,
@@ -77,8 +98,11 @@ shinyServer(function(input, output) {
                )+
                scale_y_continuous()+
                scale_x_discrete()+ # Remove extra space
-               geom_text(size=3.75,y=max(CG3$V4)/2.0,label=CG3$V3,color="black") +
-               geom_text(size=3.5,y=-15,
+               geom_text(size=3.75,y=max(CG3$V4)/2.0,
+                         fontface=ifelse(CG3$V8,"bold","plain"),
+                         label=CG3$V3,
+                         color="black") +
+               geom_label(size=3.5,y=-5,
                          aes(label=rev(CG3$V7)),
                          color="black") +
               coord_flip() +
@@ -102,7 +126,8 @@ shinyServer(function(input, output) {
     # the argument 'file'.
     content = function(file) {
 
-      #plasmidAA <- read.fasta("Plasmids20-200kb-6-9-2016AA.fa","AA")
+      print("READING FASTA... (MAY TAKE UP TO 5 MINUTES)")
+      plasmidAA <- read.fasta("Plasmids20-200kb-6-9-2016AA.fa","AA")
       print("FINISHED FASTA READ")
       
       writeSeqs <- function(seq)
@@ -123,8 +148,16 @@ shinyServer(function(input, output) {
       Seqs<-Seqs[!sapply(Seqs, is.null)] # REMOVE NULL seqs 
                                          # (since lapply return same length)
       print("DONe")
-      write.fasta(Seqs,input$variable,
-                  file.out=paste(input$variable, "faa", sep = "."))
+      print(input$variable)
+      fourName <- input$variable
+      sNames = c(fourName)
+      for (i in c(1:length(Seqs)))
+      {
+        sNames <- c(sNames,fourName)
+      }
+      print(sNames)
+      write.fasta(Seqs,sNames,
+                  file.out=paste(fourName, "faa", sep = "."))
     }
   )
 })
