@@ -45,6 +45,29 @@ genPlots <- function(backbone)
   CG3 <- CG2[order(CG2$V4),] # CRITICAL: Allow the reordering of colors!
   CG3$V7<-c(1:nrow(CG3))
   
+  references <- tolower(c("R7K","R46","pRA3","pKJK5","RK2","RP4","pNDM-1_Dok01"))
+  cids <- c()
+  for (cRow in c(1:nrow(CG3)))
+  {
+    plasmid <- strsplit(as.character(CG3$V3[cRow]),"_")[[1]]
+    if(length(plasmid)>2)
+    {
+      plasmid <- plasmid[2:length(plasmid)]
+      plasmid <- paste(plasmid,collapse="_")
+    }
+    else
+    {
+      plasmid <- plasmid[2]
+    }
+    if (plasmid %in% references)
+    {
+      cids <- c(cids, CG3$V2[cRow])
+    }
+  }
+  cids2 <- unique(cids)
+  CG3$V8 <- FALSE
+  CG3[which(CG3$V2 %in% cids),"V8"] <- TRUE
+  
   return(ggplot(CG3,aes(x=CG3$V7,y=CG3$V4))+ # Notice X position is determined by V7
           geom_bar(stat="identity",
                    fill=CG3$V6,
@@ -52,7 +75,10 @@ genPlots <- function(backbone)
           )+
           scale_y_continuous() +
           scale_x_discrete()+
-          geom_text(size=2.0,y=max(CG3$V4)/2.0,label=CG3$V3,color="black") +
+          geom_text(size=2.0,y=max(CG3$V4)/2.0,
+                    fontface=ifelse(CG3$V8,"bold","plain"),
+                    label=CG3$V3,
+                    color="black") +
           coord_flip() +
           ggtitle(backbone)+
           theme(axis.text.y=element_blank(),
