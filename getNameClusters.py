@@ -17,8 +17,7 @@ http://www.drive5.com/usearch/manual/opt_uc.html
 #==============================================================================
 def gather_clusters_R_ZL(proteinFile = "Backbones_4.csv", 
                       clusterFile = "Plasmids20-200kb-6-9-2016_Clusters.tab",
-                      outfile = "ClusterGroups.csv",
-                      checkProteins = False):
+                      outfile = "ClusterGroups.csv"):
     import csv
 
     cRows = [] # Rows which contain a cluster summary
@@ -50,9 +49,8 @@ def gather_clusters_R_ZL(proteinFile = "Backbones_4.csv",
                     currProt = srow[8].lower()
                     cid = srow[1]
                     if protein.lower() in currProt:
-                        if checkProteins==False:
-                            ClusterIDs[index].add(cid)
-                            ProtInfo[currProt] = [srow[2],srow[3]]                            
+                        ClusterIDs[index].add(cid)
+                        ProtInfo[currProt] = [srow[2],srow[3]]                            
                     if cid in ClusterIDs[index]:
                         ProtInfo[currProt] = [srow[2],srow[3]]
                         try:
