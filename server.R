@@ -5,19 +5,6 @@ library(seqinr)
 # Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
   
-  # Compute the forumla text in a reactive function since it is 
-  # shared by the output$caption and output$mpgPlot functions
-  formulaText <- reactive(function() {
-    paste("mpg ~", input$variable)
-  })
-  
-  # Return the formula text for printing as a caption
-  output$caption <- renderText(function() {
-    formulaText()
-  })
-  
-  # Generate a plot
-  
   getHeight<-function() # NOTE: I don't know how/why this works!
   {
     return(exprToFunction(input$rC2))
@@ -90,7 +77,8 @@ shinyServer(function(input, output) {
       
       #CG3$V8<-c(1:nrow(CG3)) # CRITICAL: Used for labeling and position!
       
-      seqData <<- as.character(CG3$V3)
+      seqData <<- as.character(CG3$V3) # CRITICAL: Used to write file
+      
       print(ggplot(CG3,aes(x=c(1:nrow(CG3)),y=CG3$V4))+ # Notice X position is determined by V7
                geom_bar(stat="identity",
                         fill=CG3$V6,
@@ -150,10 +138,16 @@ shinyServer(function(input, output) {
       print("DONe")
       print(input$variable)
       fourName <- input$variable
-      sNames = c(fourName)
+      sNames <- c(fourName) # AS of 7/15/16 NEEDS TO BE FIXED
+      # THE FIRST NAME DOES NOT HAVE THE OLD NAME APPENDED
       for (i in c(1:length(Seqs)))
       {
-        sNames <- c(sNames,fourName)
+        seqName <- attr(Seqs[i],"name")
+        if (grepl("<unknown description>",seqName))
+        {
+          seqName <- strsplit(seqName," ")[[1]][1]
+        }
+        sNames <- c(sNames,paste(fourName,seqName,sep="_"))
       }
       print(sNames)
       write.fasta(Seqs,sNames,
