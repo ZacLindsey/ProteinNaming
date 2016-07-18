@@ -1,17 +1,50 @@
 library(shiny)
 library(datasets)
-library(ggplot2) # load ggplot
+library(ggplot2)
 library(seqinr)
-# Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
   
-  getHeight<-function() # NOTE: I don't know how/why this works!
+  getHeight<-function() 
   {
-    return(exprToFunction(input$rC2))
+      return(
+        exprToFunction(
+          
+          if(
+          (50+13*nrow(
+            if(input$Subset)
+            {
+              subsetData(
+                ClusterGroups[which(ClusterGroups$V1==input$variable),],input$ranges)
+            }
+            else
+            {
+              ClusterGroups[which(ClusterGroups$V1==input$variable),]
+            }
+            )
+           )<32000
+          )
+          {
+            (50+13*nrow(
+              if(input$Subset)
+              {
+                subsetData(
+                  ClusterGroups[which(ClusterGroups$V1==input$variable),],input$ranges)
+              }
+              else
+              {
+                ClusterGroups[which(ClusterGroups$V1==input$variable),]
+              }
+            ))
+          }
+          else
+          {
+            32000
+          }
+          )
+        )
   }
   
   output$proteinPlot <- renderPlot({
-    # check for the input variable
     backbone <- input$variable
     
     x=c()
@@ -42,7 +75,14 @@ shinyServer(function(input, output) {
       CG2$V4 <- as.double(CG2$V4)
       CG2$V5 <- CG2$V5/100.00
 
-      CG3 <- CG2[order(CG2$V4),] # CRITICAL: Allow the reordering of colors!
+      if (input$arrange == "Sequence Length")
+      {
+        CG3 <- CG2[order(CG2$V4),] # CRITICAL: Allow the reordering of colors!
+      }
+      else
+      {
+        CG3 <- CG2
+      }
       
       CG3$V7<-c(1:nrow(CG3)) # CRITICAL: Used for labeling and position!
       # Will be the same as V7 if no subset

@@ -1,16 +1,12 @@
 library(shiny)
 ClusterGroups <<- read.csv(file="ClusterGroups_6-28.csv",head=FALSE,sep=",")
 
-# Define UI for miles per gallon application
 shinyUI(pageWithSidebar(
   
-  # Application title
   headerPanel("Plasmid Backbone"),
   
-  # Sidebar with controls to select the variable to plot against mpg
-  # and to specify whether outliers should be included
   sidebarPanel(
-    selectInput("variable", "Variable:",
+    selectInput("variable", "Backbone Protein Name:",
                 choices=names(
                   setNames(
                     unique(
@@ -21,15 +17,14 @@ shinyUI(pageWithSidebar(
                   )
                 ),
     
-    numericInput("rC2",label="Height (Pixels):",value=1000),
-    textInput("ranges",label="Enter ranges to subset (1-5, 10-20, ...):"),
+    radioButtons("arrange","Order By:",c("Sequence Length","AA Cluster")),
+    textInput("ranges",label="Select Ranges (1-5, 10-20, ...):"),
     
-    checkboxInput("Subset", "Subset", FALSE),
+    checkboxInput("Subset", "Only Select These Ranges", FALSE)
     
-    downloadButton('downloadData', 'Download (may take ~5 min)')
+    #downloadButton('downloadData', 'Download (may take ~5 min)') #Uncomment to use locally
   ),
   
-  # Show the caption and plot of the requested variable against mpg
   mainPanel(
     h3("Plot of this protein (may take a few min to render)"),
     h5("Bold labeled font = matched a reference plasmid"),
