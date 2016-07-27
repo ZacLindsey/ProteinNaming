@@ -11,6 +11,72 @@ Information about the format of the .tab file can be found at:
 http://www.drive5.com/usearch/manual/opt_uc.html
 """
 #==============================================================================
+# Case sensitive - 7/27/2016 Update
+# Should be identical to gather_clusters_R_ZL except .lower() is removed
+#==============================================================================
+def gather_clusters_case_ZL(proteinFile = "Backbones_4.csv", 
+                      clusterFile = "Plasmids20-200kb-6-9-2016_Clusters.tab",
+                      outfile = "ClusterGroups.csv"):
+    import csv
+
+    cRows = [] # Rows which contain a cluster summary
+    sRows = [] # Rows which contain a centroid or hit 
+    
+    with open(clusterFile,"r") as clusterfile:
+        readTab = csv.reader(clusterfile, delimiter="\t")
+        for clustRow in readTab:
+            if clustRow[0] == "C":
+                cRows.append(clustRow)
+            else:
+                sRows.append(clustRow)
+    
+    titles = []
+    Names = []
+    ClusterIDs = []
+    ProtInfo = {}
+    index = -1
+    
+    with open(proteinFile,"r") as backbones:
+        backboneFile = csv.reader(backbones)
+        for backboneRow in backboneFile:
+            titles.append(backboneRow[0])
+            Names.append({})
+            ClusterIDs.append(set())
+            index += 1
+            for protein in backboneRow: 
+                for srow in sRows:
+                    currProt = srow[8]
+                    cid = srow[1]
+                    if protein in currProt:
+                        ClusterIDs[index].add(cid)
+                        ProtInfo[currProt] = [srow[2],srow[3]]                            
+                    if cid in ClusterIDs[index]:
+                        ProtInfo[currProt] = [srow[2],srow[3]]
+                        try:
+                            Names[index][cid].add(currProt)
+                        except KeyError:
+                            Names[index][cid] = set()
+                            Names[index][cid].add(currProt) 
+                        sRows.remove(srow)
+                        
+    with open(outfile, "w") as out:
+        Writer = csv.writer(out)
+        for i in range(len(Names)):
+            for j in Names[i]:
+                rows = []
+                for k in Names[i][j]:
+                    row = []
+                    row.append(titles[i])
+                    row.append(j)
+                    row.append(k)
+                    row.append(ProtInfo[k][0])
+                    row.append(ProtInfo[k][1])
+                    rows.append(row)
+                rows.sort(key=lambda x: int(x[3]))
+                for row in reversed(rows):
+                    Writer.writerow(row)
+                    
+#==============================================================================
 # R VERSION (1.0)
 #   > Re-designed for simplicity (6/14 - 6/16)
 #   > Intended to generate output for R

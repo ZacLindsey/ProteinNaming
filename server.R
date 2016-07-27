@@ -101,7 +101,7 @@ shinyServer(function(input, output) {
         {
           plasmid <- plasmid[2]
         }
-        if (plasmid %in% references)
+        if (tolower(plasmid) %in% references)
         {
           cids <- c(cids, CG3$V2[cRow])
         }

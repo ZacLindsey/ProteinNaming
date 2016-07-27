@@ -1,5 +1,5 @@
 library(shiny)
-ClusterGroups <<- read.csv(file="ClusterGroups_6-28.csv",head=FALSE,sep=",")
+ClusterGroups <<- read.csv(file="ClusterGroups.csv",head=FALSE,sep=",")
 
 shinyUI(pageWithSidebar(
   
