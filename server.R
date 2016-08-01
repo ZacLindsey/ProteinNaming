@@ -165,7 +165,7 @@ shinyServer(function(input, output) {
         {
           seqName <- strsplit(seqName," ")[[1]][1]
         }
-        if (tolower(seqName) %in% seqData)
+        if (seqName %in% seqData)
         {
           print("RETURNING...")
           return(seq)
@@ -178,18 +178,30 @@ shinyServer(function(input, output) {
       print("DONe")
       print(input$variable)
       fourName <- input$variable
-      sNames <- c(fourName) # AS of 7/15/16 NEEDS TO BE FIXED
-      # THE FIRST NAME DOES NOT HAVE THE OLD NAME APPENDED
       for (i in c(1:length(Seqs)))
       {
         seqName <- attr(Seqs[i],"name")
-        if (grepl("<unknown description>",seqName))
+        print("1")
+        if (length(seqName)>0)
         {
-          seqName <- strsplit(seqName," ")[[1]][1]
+          if (grepl("<unknown description>",seqName))
+          {
+            print("2")
+            seqName <- strsplit(seqName," ")[[1]][1]
+            print("3")
+          }
         }
+        if (i!=1)
+        {
         sNames <- c(sNames,paste(fourName,seqName,sep="_"))
+        }
+        else
+        {
+        sNames <- c(paste(fourName,seqName,sep="_"))
+        }
       }
       print(sNames)
+      print(Seqs)
       write.fasta(Seqs,sNames,
                   file.out=paste(fourName, "faa", sep = "."))
     }

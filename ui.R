@@ -22,7 +22,9 @@ shinyUI(pageWithSidebar(
     
     checkboxInput("Subset", "Only Select These Ranges", FALSE)
     
-    #downloadButton('downloadData', 'Download (may take ~5 min)') #Uncomment to use locally
+    # To use the local download feature, uncomment the following line
+    # AND add a comma after checkboxInput
+    #downloadButton('downloadData', 'Download (may take ~5 min)')
   ),
   
   mainPanel(
